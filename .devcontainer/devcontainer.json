@@ -1,0 +1,23 @@
+{
+    "name": "SystemVerilog Dev",
+    "image": "ubuntu:jammy",
+    "runArgs": [
+      "--name",
+      "systemverilog-dev"
+    ],
+    "remoteEnv": {
+      "LANG": "C.UTF-8"
+    },
+    "containerEnv": {
+      "DISPLAY": "host.docker.internal:0"
+    },
+    "postCreateCommand": "./.devcontainer/post-create.sh",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "mshr-h.veriloghdl",
+          "ms-python.python"
+        ]
+      }
+    }
+}
