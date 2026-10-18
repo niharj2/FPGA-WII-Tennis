@@ -1,0 +1,151 @@
+#! /usr/bin/vvp
+:ivl_version "11.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/va_math.vpi";
+:vpi_module "/usr/lib/aarch64-linux-gnu/ivl/v2009.vpi";
+S_0xaaab16281e70 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0xaaab16281b10 .scope module, "tb" "tb" 3 1;
+ .timescale 0 0;
+v0xaaab162da180_0 .var "hcount", 10 0;
+v0xaaab162da260_0 .net "pixel", 23 0, v0xaaab162b3470_0;  1 drivers
+v0xaaab162da370_0 .var "vcount", 9 0;
+S_0xaaab162817d0 .scope module, "game" "pong_game" 3 7, 4 621 0, S_0xaaab16281b10;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "vclock";
+    .port_info 1 /INPUT 1 "reset";
+    .port_info 2 /INPUT 1 "up";
+    .port_info 3 /INPUT 1 "down";
+    .port_info 4 /INPUT 4 "pspeed";
+    .port_info 5 /INPUT 11 "hcount";
+    .port_info 6 /INPUT 10 "vcount";
+    .port_info 7 /INPUT 1 "hsync";
+    .port_info 8 /INPUT 1 "vsync";
+    .port_info 9 /INPUT 1 "blank";
+    .port_info 10 /OUTPUT 1 "phsync";
+    .port_info 11 /OUTPUT 1 "pvsync";
+    .port_info 12 /OUTPUT 1 "pblank";
+    .port_info 13 /OUTPUT 24 "pixel";
+L_0xffff81ac6210 .functor BUFT 1, C4<1>, C4<0>, C4<0>, C4<0>;
+L_0xaaab16255fd0 .functor BUFZ 1, L_0xffff81ac6210, C4<0>, C4<0>, C4<0>;
+L_0xffff81ac6258 .functor BUFT 1, C4<1>, C4<0>, C4<0>, C4<0>;
+L_0xaaab162da480 .functor BUFZ 1, L_0xffff81ac6258, C4<0>, C4<0>, C4<0>;
+L_0xffff81ac62a0 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+L_0xaaab162da4f0 .functor BUFZ 1, L_0xffff81ac62a0, C4<0>, C4<0>, C4<0>;
+v0xaaab162d90d0_0 .net *"_ivl_7", 2 0, L_0xaaab162da5c0;  1 drivers
+v0xaaab162d91d0_0 .net *"_ivl_9", 2 0, L_0xaaab162da690;  1 drivers
+v0xaaab162d92b0_0 .net "blank", 0 0, L_0xffff81ac62a0;  1 drivers
+v0xaaab162d9350_0 .net "checkerboard", 2 0, L_0xaaab162da760;  1 drivers
+L_0xffff81ac6180 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9430_0 .net "down", 0 0, L_0xffff81ac6180;  1 drivers
+v0xaaab162d9540_0 .net "hcount", 10 0, v0xaaab162da180_0;  1 drivers
+v0xaaab162d9600_0 .net "hsync", 0 0, L_0xffff81ac6210;  1 drivers
+v0xaaab162d96a0_0 .net "pblank", 0 0, L_0xaaab162da4f0;  1 drivers
+v0xaaab162d9760_0 .net "phsync", 0 0, L_0xaaab16255fd0;  1 drivers
+v0xaaab162d9820_0 .net "pixel", 23 0, v0xaaab162b3470_0;  alias, 1 drivers
+L_0xffff81ac61c8 .functor BUFT 1, C4<0000>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d98e0_0 .net "pspeed", 3 0, L_0xffff81ac61c8;  1 drivers
+v0xaaab162d99a0_0 .net "pvsync", 0 0, L_0xaaab162da480;  1 drivers
+L_0xffff81ac6018 .functor BUFT 1, C4<00111100000>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9a60_0 .net "rect_top_left_x", 10 0, L_0xffff81ac6018;  1 drivers
+L_0xffff81ac6060 .functor BUFT 1, C4<0101100000>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9b20_0 .net "rect_top_left_y", 9 0, L_0xffff81ac6060;  1 drivers
+L_0xffff81ac60f0 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9bc0_0 .net "reset", 0 0, L_0xffff81ac60f0;  1 drivers
+L_0xffff81ac6138 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9c60_0 .net "up", 0 0, L_0xffff81ac6138;  1 drivers
+L_0xffff81ac60a8 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0xaaab162d9d20_0 .net "vclock", 0 0, L_0xffff81ac60a8;  1 drivers
+v0xaaab162d9de0_0 .net "vcount", 9 0, v0xaaab162da370_0;  1 drivers
+v0xaaab162d9ea0_0 .net "vsync", 0 0, L_0xffff81ac6258;  1 drivers
+L_0xaaab162da5c0 .part v0xaaab162da180_0, 6, 3;
+L_0xaaab162da690 .part v0xaaab162da370_0, 6, 3;
+L_0xaaab162da760 .arith/sum 3, L_0xaaab162da5c0, L_0xaaab162da690;
+S_0xaaab16282850 .scope module, "puck" "blob" 4 655, 4 600 0, S_0xaaab162817d0;
+ .timescale 0 0;
+    .port_info 0 /INPUT 11 "x";
+    .port_info 1 /INPUT 11 "hcount";
+    .port_info 2 /INPUT 10 "y";
+    .port_info 3 /INPUT 10 "vcount";
+    .port_info 4 /OUTPUT 24 "pixel";
+P_0xaaab16255eb0 .param/l "COLOR" 0 4 603, C4<111111111111111111111111>;
+P_0xaaab16255ef0 .param/l "HEIGHT" 0 4 602, +C4<00000000000000000000000001000000>;
+P_0xaaab16255f30 .param/l "WIDTH" 0 4 601, +C4<00000000000000000000000001000000>;
+v0xaaab162bc3c0_0 .net "hcount", 10 0, v0xaaab162da180_0;  alias, 1 drivers
+v0xaaab162b3470_0 .var "pixel", 23 0;
+v0xaaab162c9380_0 .net "vcount", 9 0, v0xaaab162da370_0;  alias, 1 drivers
+v0xaaab162d8e20_0 .net "x", 10 0, L_0xffff81ac6018;  alias, 1 drivers
+v0xaaab162d8f00_0 .net "y", 9 0, L_0xffff81ac6060;  alias, 1 drivers
+E_0xaaab162c1310 .event edge, v0xaaab162bc3c0_0, v0xaaab162d8e20_0, v0xaaab162c9380_0, v0xaaab162d8f00_0;
+    .scope S_0xaaab16282850;
+T_0 ;
+    %wait E_0xaaab162c1310;
+    %load/vec4 v0xaaab162d8e20_0;
+    %load/vec4 v0xaaab162bc3c0_0;
+    %cmp/u;
+    %flag_get/vec4 4;
+    %flag_get/vec4 5;
+    %or;
+    %load/vec4 v0xaaab162bc3c0_0;
+    %pad/u 32;
+    %load/vec4 v0xaaab162d8e20_0;
+    %pad/u 32;
+    %addi 64, 0, 32;
+    %cmp/u;
+    %flag_get/vec4 5;
+    %and;
+    %load/vec4 v0xaaab162d8f00_0;
+    %load/vec4 v0xaaab162c9380_0;
+    %cmp/u;
+    %flag_get/vec4 4;
+    %flag_get/vec4 5;
+    %or;
+    %load/vec4 v0xaaab162c9380_0;
+    %pad/u 32;
+    %load/vec4 v0xaaab162d8f00_0;
+    %pad/u 32;
+    %addi 64, 0, 32;
+    %cmp/u;
+    %flag_get/vec4 5;
+    %and;
+    %and;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.0, 8;
+    %pushi/vec4 16777215, 0, 24;
+    %store/vec4 v0xaaab162b3470_0, 0, 24;
+    %jmp T_0.1;
+T_0.0 ;
+    %pushi/vec4 0, 0, 24;
+    %store/vec4 v0xaaab162b3470_0, 0, 24;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0, $push;
+    .scope S_0xaaab16281b10;
+T_1 ;
+    %pushi/vec4 512, 0, 11;
+    %store/vec4 v0xaaab162da180_0, 0, 11;
+    %pushi/vec4 384, 0, 10;
+    %store/vec4 v0xaaab162da370_0, 0, 10;
+    %delay 10, 0;
+    %vpi_call/w 3 28 "$display", "Inside blob: %h", v0xaaab162da260_0 {0 0 0};
+    %pushi/vec4 0, 0, 11;
+    %store/vec4 v0xaaab162da180_0, 0, 11;
+    %pushi/vec4 0, 0, 10;
+    %store/vec4 v0xaaab162da370_0, 0, 10;
+    %delay 10, 0;
+    %vpi_call/w 3 33 "$display", "Outside blob: %h", v0xaaab162da260_0 {0 0 0};
+    %vpi_call/w 3 35 "$finish" {0 0 0};
+    %end;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "tb.v";
+    "pong.v";
