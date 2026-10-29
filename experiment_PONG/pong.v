@@ -617,6 +617,48 @@ module blob #(
   end
 endmodule
 
+module determine_edge_collision #(
+    parameter IMAGE_WIDTH = 1024,
+    parameter IMAGE_HEIGHT = 768,
+    parameter WIDTH = 64,
+    parameter HEIGHT = 64
+) (
+    output reg [7:4] x_velocity_output,
+    output reg [7:4] y_velocity_output,
+    input [10:0] x,
+    input [9:0] y,
+    input reg [7:4] x_velocity_input,
+    input reg [7:4] y_velocity_input,
+    input vsync
+);
+
+  always @* begin
+    $display("This is inside the always block");
+    y_velocity_output = y_velocity_input;
+    x_velocity_output = x_velocity_input;
+    $display("This is the value of x %d", x);
+    if (x <= 0) begin
+      $display("This is inside the always block");
+      x_velocity_output = x_velocity_input * -1;
+    end
+
+    if (x + WIDTH >= IMAGE_WIDTH) begin
+      x_velocity_output = x_velocity_input * -1;
+    end
+
+    if (y <= 0) begin
+      y_velocity_output = y_velocity_input * -1;
+    end
+
+    if (y + HEIGHT >= IMAGE_HEIGHT) begin
+      y_velocity_output = y_velocity_input * -1;
+    end
+  end
+endmodule
+
+// 0 is high, 1 is low
+
+
 
 module pong_game (
     input vclock,  // 65MHz clock
@@ -645,14 +687,53 @@ module pong_game (
   assign pvsync = vsync;
   assign pblank = blank;
   assign checkerboard = hcount[8:6] + vcount[8:6];
+  reg signed [ 3:0] real_x_velocity;
+  reg signed [ 3:0] real_y_velocity;
+  reg signed [10:0] global_x_position_puck;
+  reg signed [ 9:0] global_y_position_puck;
+  reg signed [ 3:0] out_x_velocity;
+  reg signed [ 3:0] out_y_velocity;
 
-  // here we use three bits from hcount and vcount to generate the \
-   // checkerboard
-  wire [10:0] rect_top_left_x;
-  wire [9:0] rect_top_left_y;
-  assign rect_top_left_x = 1024/2 - 32;
-  assign rect_top_left_y = 768 / 2 - 32;
-  blob puck(.x(rect_top_left_x), .hcount(hcount), .y(rect_top_left_y), .vcount(vcount), .pixel(pixel));
+  initial begin
+    global_x_position_puck = 11'b00111100000;
+    global_y_position_puck = 10'b101100000;
+  end
+
+  initial begin
+    real_x_velocity = 4'b0101;
+    real_y_velocity = 4'b0101;
+  end
+
+  determine_edge_collision m1 (
+      .x_velocity_output(out_x_velocity),
+      .y_velocity_output(out_y_velocity),
+      .x(global_x_position_puck),
+      .y(global_y_position_puck),
+      .x_velocity_input(real_x_velocity),
+      .y_velocity_input(real_y_velocity),
+      .vsync(vsync)
+  );
+  always @(negedge vsync) begin
+    if (pspeed == 4'b0101) begin
+      real_x_velocity = out_x_velocity;
+      real_y_velocity = out_y_velocity;
+      global_x_position_puck = global_x_position_puck + real_x_velocity;
+      global_y_position_puck = global_y_position_puck + real_y_velocity;
+
+      $display("top left %t", global_y_position_puck);
+      $display("top right %t", global_x_position_puck);
+      $display("right velocity %t", real_x_velocity);
+      $display("left velocity  %t", real_y_velocity);
+    end
+  end
+
+  blob b1 (
+      .x(global_x_position_puck),
+      .hcount(hcount),
+      .y(global_y_position_puck),
+      .vcount(vcount),
+      .pixel(pixel)
+  );
 
 
 endmodule
