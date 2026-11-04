@@ -599,9 +599,7 @@ endmodule
 ////////////////////////////////////////////////////////////////////////////////
 
 module blob #(
-    parameter WIDTH  = 64,           // default width: 64 pixels
-              HEIGHT = 64,           // default height: 64 pixels
-              COLOR  = 24'hFF_FF_FF
+    parameter COLOR  = 24'hFF_FF_FF, parameter WIDTH, parameter HEIGHT
 )  // default color: white
 (
     input [10:0] x,
@@ -618,13 +616,46 @@ module blob #(
   end
 endmodule
 
+module determine_edge_collision #(
+    parameter IMAGE_WIDTH = 1024, IMAGE_HEIGHT = 768, WIDTH = 64, HEIGHT = 64)
+  (
+    input signed [10:0] top_left_x,
+    input signed [9:0] top_left_y,
+    input signed [9:0] paddle_y,
+    input signed [3:0] x_velocity_input,
+    input signed [3:0] y_velocity_input,
+
+    output reg signed [3:0] x_velocity_output,
+    output reg signed [3:0] y_velocity_output
+  );
+    always @(*) begin
+      $display("reached here!");
+      // $display("top left x: %d", top_left_x);
+      // $display("top left y: %d", top_left_y);
+
+      x_velocity_output <= x_velocity_input;
+      y_velocity_output <= y_velocity_input;
+
+      if (top_left_x <= 0)
+        $finish;
+      else if (top_left_x <= 16 && (top_left_y >= paddle_y && top_left_y <= paddle_y + 128 || top_left_y + 64 >= paddle_y && top_left_y + 64 <= paddle_y + 128))
+        x_velocity_output <= x_velocity_input * -1;
+      else if (top_left_x + WIDTH >= IMAGE_WIDTH)
+        x_velocity_output <= x_velocity_input * -1;
+      else if (top_left_y <= 0)
+        y_velocity_output <= y_velocity_input * -1;
+      else if (top_left_y + HEIGHT >= IMAGE_HEIGHT)
+        y_velocity_output <= y_velocity_input * -1;
+    end
+endmodule
+
 module pong_game (
     input vclock,  // 65MHz clock
     input reset,  // 1 to initialize module
     input up,  // 1 when paddle should move up
     input down,  // 1 when paddle should move down
     input [3:0] pspeed,  // puck speed in pixels/tick 
-    input [10:0] hcount,  // horizontal index of current pixel (0..1023)
+    input [10:0] hcount,   // horizontal index of current pixel (0..1023)
     input [9:0] vcount,  // vertical index of current pixel (0..767)
     input hsync,  // XVGA horizontal sync signal (active low)
     input vsync,  // XVGA vertical sync signal (active low)
@@ -646,30 +677,87 @@ module pong_game (
   assign pblank = blank;
   assign checkerboard = hcount[8:6] + vcount[8:6];
 
-  // here we use three bits from hcount and vcount to generate the \
-   // checkerboard
+  wire signed [3:0] x_velocity_out;
+  wire signed [3:0] y_velocity_out;
 
-//    assign pixel = {
-//     {8{checkerboard[2]}}, {8{checkerboard[1]}}, {8{checkerboard[0]}}
-//   };
+  reg signed [10:0] rect_top_left_x;
+  reg signed [9:0] rect_top_left_y;
 
-    wire [10:0] rect_top_left_x;
-    wire [9:0] rect_top_left_y;
-    assign rect_top_left_x = 1024/2 - 32;
-    assign rect_top_left_y = 768/2 - 32;
+  reg signed [3:0] x_velocity;
+  reg signed [3:0] y_velocity; 
 
-   blob puck (
-      .x(rect_top_left_x),
-      .hcount(hcount),
-      .y(rect_top_left_y),
-      .vcount(vcount),
-      .pixel(pixel)
+  reg [9:0] paddle_y;
+
+  wire[23:0] paddle_pixel;
+  wire[23:0] blob_pixel;
+
+  initial begin
+    rect_top_left_x = 11'b111100000;
+    rect_top_left_y = 10'b101100000;
+
+    paddle_y = 10'b110000000;
+
+    x_velocity = 4'b1010;
+    y_velocity = 4'b1010;
+  end
+
+
+  blob #(.COLOR(24'hFF_00_00), .WIDTH(16), .HEIGHT(128))
+    paddle (
+    .x(0),
+    .hcount(hcount),
+    .y(paddle_y),
+    .vcount(vcount),
+    .pixel(paddle_pixel)
   );
 
+  // initial begin
+  //   $monitor("R=%h, G=%h, B=%h", pixel[23:16], pixel[15:8], pixel[7:0]);
+  // end
 
+  determine_edge_collision collision (
+    .top_left_x(rect_top_left_x), .top_left_y(rect_top_left_y),
+    .paddle_y(paddle_y),
+    .x_velocity_input(x_velocity),
+    .y_velocity_input(y_velocity),
+    .x_velocity_output(x_velocity_out), // output velocity
+    .y_velocity_output(y_velocity_out)
+  );
 
+  // called once every frame
+  always @(negedge vsync) begin
+    if (pspeed == 4'b0101) begin
+      // motion
+      x_velocity <= x_velocity_out;
+      y_velocity <= y_velocity_out;
 
+      rect_top_left_x <= rect_top_left_x + x_velocity_out;
+      rect_top_left_y <= rect_top_left_y + y_velocity_out;
 
-  
+      $display("top_left_x: %d", rect_top_left_x);
+      $display("top_left_y: %d", rect_top_left_y);
+
+      $display("x_velocity: %d", x_velocity);
+      $display("y_velocity: %d", y_velocity);
+    end
+  end
+
+  always @* begin
+    if (up == 1)
+      paddle_y = paddle_y - 20;
+    else if (down == 1)
+      paddle_y = paddle_y + 20;
+  end
+
+  blob #(.WIDTH(64), .HEIGHT(64))
+    move_puck(
+    .x(rect_top_left_x),
+    .hcount(hcount),
+    .y(rect_top_left_y),
+    .vcount(vcount),
+    .pixel(blob_pixel)
+  );
+
+  assign pixel = blob_pixel | paddle_pixel;
 
 endmodule
